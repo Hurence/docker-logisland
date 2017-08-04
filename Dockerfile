@@ -1,7 +1,7 @@
 FROM hurence/spark
 
-ARG hdp_version=2.4
-ARG logisland_version=0.10.1
+ARG hdp_version=2.5
+ARG logisland_version=0.10.2
 ARG spark_version=2.1.1
 
 MAINTAINER hurence
