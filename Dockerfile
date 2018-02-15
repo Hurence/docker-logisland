@@ -10,7 +10,6 @@ MAINTAINER hurence
 VOLUME ["/logisland"]
 
 
-#COPY logisland-*.tar.gz /tmp
 RUN cd /tmp; wget https://github.com/Hurence/logisland/releases/download/v${logisland_version}/logisland-${logisland_release}-bin-hdp${hdp_version}.tar.gz;
 RUN cd /tmp; \
 	tar -xzf logisland-*.tar.gz; \
