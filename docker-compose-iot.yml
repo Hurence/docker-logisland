@@ -1,0 +1,74 @@
+
+
+kapua-logisland:
+  #command: /bin/bash bin/logisland.sh --conf conf/mqtt-to-historian.yml
+  command: tail -f bin/logisland.sh
+  environment:
+    - MQTT_BROKER_URL=tcp://51.15.164.141:1883
+  image: 'hurence/logisland:0.12.0'
+  net: host
+  ports:
+    - '4050:4050'
+    - '8008:8008'
+  volumes:
+    - ./conf/logisland:/conf
+    - ./data/logisland:/data
+
+
+kapua-sql:
+  image: 'kapua/kapua-sql:0.3.2'
+  net: host
+  ports:
+    - '3306:3306'
+    - '8181:8181'
+    - '8778:8778'
+
+kapua-api:
+  environment:
+    - commons.db.schema.update=true
+  image: 'kapua/kapua-api:0.3.2'
+  links:
+    - 'kapua-sql:db'
+    - 'kapua-elasticsearch:es'
+  net: host
+  ports:
+    - '8081:8080'
+    - '8778:8778'
+
+kapua-chronix:
+  image: 'hurence/chronix:latest'
+  net: host
+  ports:
+    - '8983:8983'
+
+kapua-console:
+  environment:
+    - commons.db.schema.update=true
+  image: 'kapua/kapua-console:0.3.2'
+  links:
+    - 'kapua-sql:db'
+    - 'kapua-elasticsearch:es'
+  net: host
+  ports:
+    - '8080:8080'
+    - '8778:8778'
+
+kapua-elasticsearch:
+  command: /bin/bash bin/es-docker
+  deployment_strategy: every_node
+  environment:
+    - ES_JAVA_OPTS=-Xms1g -Xmx1g
+    - bootstrap.memory_lock=false
+    - cluster.name=kapua-datastore
+    - discovery.type=single-node
+    - network.publish_host=0.0.0.0
+    - transport.host=_site_
+    - transport.ping_schedule=-1
+    - transport.tcp.connect_timeout=30s
+    - xpack.security.enabled=false
+    - xpack.watcher.enabled=false
+  image: 'docker.elastic.co/elasticsearch/elasticsearch:5.4.0'
+  net: host
+  ports:
+    - '9200:9200'
+    - '9300:9300'
