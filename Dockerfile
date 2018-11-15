@@ -1,6 +1,6 @@
 FROM hurence/spark
 
-ARG logisland_version=v1.0.0-RC2
+ARG logisland_version=1.0.0-RC2
 
 MAINTAINER hurence
 
